@@ -18,4 +18,6 @@
 * create ID if necessary
 * Click On Droplets and then Create Droplet
 
+[xxx](https://github.com/jvkatzman/guldinstructions/blob/master/images/create%20droplet.png)
+
 cc
