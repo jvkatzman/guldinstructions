@@ -126,6 +126,7 @@ Enter passphrase for key '/Users/XX/.ssh/gitServer':
 ## Now create git user
 * In the terminal with _**git_owner**_
 > sudo useradd git
+
 > sudo passwd git
 
 -----------------------------------------------
@@ -138,14 +139,14 @@ Enter passphrase for key '/Users/XX/.ssh/gitServer':
 * Check that home/_**git**_ exists
 > cd /home/_**git**_
 * create .ssh directory
-> sudo mkdir .ssh
+> mkdir .ssh
 
 -----------------------------------------------
 ## Create an end user key that will be used for git o lite and does not have sudo rights
-* In the terminal with _**root**_
-* create a new ssh key - we are using _**gituser**_
+* In the local terminal create a new ssh key - we are using _**gituser**_
+* In the terminal with _**git**_
 * Add end user ssh key to git server in /home/_**git**_/ directory
-> sudo nano .ssh/authorized_keys
+> nano .ssh/authorized_keys
 * Add the new key to the file. Make sure 1 line per key. 
 * No extra lines
 > Ctrl-X
@@ -184,10 +185,10 @@ Enter passphrase for key '/Users/XX/.ssh/gitServer':
 * Using user **_git_**
 * Go to the home/git directory 
 > cd /home/git
-* create a new ssh key - we are using _**gitadmin**_  on your local machine
+* create a new ssh key for git administration on your local machine - we are using _**gitadmin**_
 
-* copy over gitadmin.pub
-> nano gitadmin.pub
+* copy over _**gitadmin**_.pub
+> nano _**gitadmin**_.pub
 
 * copy key from local machine and save
 
@@ -211,11 +212,73 @@ Checking connectivity... done.
 * Check that install worked
 > ls /bin -la
 * set up key
-> /home/git/bin/gitolite setup -pk gitadmin.pub
+> /home/git/bin/gitolite setup -pk _**gitadmin**_.pub
+* confirm that hidden diretory exist (especially .ssh)
+> ls -l .   (then enter tab tab)
+* Add administration user keys into directory
+> cat .ssh/authorized_keys
+* check directories:
+> ls
+* should look similar to:
+    git@gitServer:~$ ls
+    bin  gitadmin.pub  gitolite  projects.list  repositories
 
 -----------------------------------------------
 ## Test on local machine by cloning gitolite-admin and adding users
+
+* On local machine, in your .ssh directory create or modify your config file, similar to:
+>host 104.236.69.202
+
+>    HostName 104.236.69.202
+
+>    IdentityFile ~/.ssh/**_gitadmin_**
+
+>    User ****git****
+
+* On local machine open a new terminal session
+* create temporary directory.  We called it _**testgitlite**_
+> mkdir _**testgitlite**_
+> cd _**testgitlite**_
+
+* Clone the git admin code:
+> git clone git@104.236.69.202:gitolite-admin.git
+
+* Let's add some additional keys
+> cd keydir
+
+* copy some public key over - we added jk_rsa.pub
+* see git changes
+> git status
+* Now add changed items
+> git add jk_rsa.pub
+* check status
+> git status
+* commit change
+> git commit -m "add new key"
+* push changes to server
+> git push
+
+* Now add admin rights
+> cd ../conf
+* Edit admin file
+> nano gitolite.conf
+* Add after gitadmin:
+>     RW+     =   jk_rsa
+> ctrl X
+
+> Y
+* see git changes
+> git status
+* Now add changed items
+> git add gitolite.conf
+* check status
+> git status
+* commit change
+> git commit -m "add new key admin rights"
+* push changes to server
+> git push
+* check status
+> git status
+
 -----------------------------------------------
-
-
-cc
+* CONGRATULATIONS - YOU'VE DONE IT :)
